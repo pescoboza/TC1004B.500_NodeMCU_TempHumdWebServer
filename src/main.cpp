@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <WIFIClient.h>
 #include <ESP8266WebServer.h>
+#include <Adafruit_Sensor.h>
 #include <DHT.h>
 
 #include "config.h"
@@ -13,6 +14,7 @@
 DHT dht(DHT_PIN, DHT_TYPE);
 ESP8266WebServer server{80}; // Object for web server on port 80
 
+// View endpoint functions for the server
 namespace view{
     void index(){
         digitalWrite(BUILTIN_LED, LOW);
@@ -20,12 +22,13 @@ namespace view{
         digitalWrite(BUILTIN_LED, HIGH);
     }
 
+    // Returns message for humidity and temparature
     void read(){
         float humd{dht.readHumidity()};
         float temp{dht.readTemperature()};
         String msg{"The temperature is "};
         msg += temp;
-        msg += "°C and the humidity is ";
+        msg += " C and the humidity is ";
         msg += humd;
         msg += "%.";
         server.send(200, "text/plain", msg);
@@ -38,7 +41,7 @@ namespace view{
     }
 };
 
-
+// Setting the views to the endpoint uris
 void setupServer(){
     server.on("/", view::index);
     server.on("/read", view::read);
@@ -75,7 +78,7 @@ void setup() {
     // Begin the HTTP server
     setupServer();
     server.begin();
-    Serial.println("Initialized HTTP sever");
+    Serial.println("Initialized HTTP server");
 }
 
 void loop() {

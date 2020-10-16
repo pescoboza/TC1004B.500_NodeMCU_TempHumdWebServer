@@ -11,6 +11,18 @@
 #define DHT_PIN 4
 #define DHT_TYPE DHT11
 
+// Led pins
+#define GREEN_LED 14
+#define RED_LED 12
+#define YELLOW_LED 13 
+
+namespace led{
+    bool green{false};
+    bool red{false};
+    bool yellow{false};
+}
+
+
 DHT dht(DHT_PIN, DHT_TYPE);
 ESP8266WebServer server{80}; // Object for web server on port 80
 
@@ -39,18 +51,73 @@ namespace view{
         server.send(404, "text/plain", "Not found.");
         digitalWrite(BUILTIN_LED, HIGH);
     }
+
+    
+    void greenOn(){
+        digitalWrite(BUILTIN_LED, LOW);
+        led::green = true;
+        server.send(200, "text/plain", "OK");
+        digitalWrite(BUILTIN_LED, HIGH);
+    }
+    void greenOff(){
+        digitalWrite(BUILTIN_LED, LOW);
+        led::green = false;
+        server.send(200, "text/plain", "OK");
+        digitalWrite(BUILTIN_LED, HIGH);
+    }
+    
+    void redOn(){
+        digitalWrite(BUILTIN_LED, LOW);
+        led::red = true;
+        server.send(200, "text/plain", "OK");
+        digitalWrite(BUILTIN_LED, HIGH);
+    }
+    
+    void redOff(){
+        digitalWrite(BUILTIN_LED, LOW);
+        led::red = false;
+        server.send(200, "text/plain", "OK");
+        digitalWrite(BUILTIN_LED, HIGH);
+    }
+    
+    void yellowOn(){
+        led::yellow = true;
+        server.send(200, "text/plain", "OK");
+    }
+    
+    void yellowOff(){
+        led::yellow = false;
+        server.send(200, "text/plain", "OK");
+    }
 };
 
 // Setting the views to the endpoint uris
 void setupServer(){
     server.on("/", view::index);
     server.on("/read", view::read);
+    
+    //////////////////////////////////
+    // Turn leds on an off
+    server.on("/green-on", view::greenOn);
+    server.on("/green-off", view::greenOff);
+    server.on("/red-on", view::redOn);
+    server.on("/red-off", view::redOff);
+    server.on("/yellow-on", view::yellowOn);
+    server.on("/yellow-off", view::yellowOff);
+    //////////////////////////////////
+
+
     server.onNotFound(view::notFound);
 
 }
 
 void setup() {
+    // Set pins to output
     pinMode(BUILTIN_LED, OUTPUT);
+    pinMode(GREEN_LED, OUTPUT);
+    pinMode(RED_LED, OUTPUT);
+    pinMode(YELLOW_LED, OUTPUT);
+    
     digitalWrite(BUILTIN_LED, HIGH);
     
     // Begin the sensor
@@ -74,6 +141,7 @@ void setup() {
     Serial.println(cfg::SSID);
     Serial.print("IP:");
     Serial.println(WiFi.localIP());
+    Serial.println("LED version");
 
     // Begin the HTTP server
     setupServer();
@@ -84,4 +152,9 @@ void setup() {
 void loop() {
     // Handle client requests
     server.handleClient();
+
+    // Set leds to status
+    digitalWrite(GREEN_LED, led::green ? HIGH : LOW);
+    digitalWrite(RED_LED, led::red ? HIGH : LOW);
+    digitalWrite(GREEN_LED, led::yellow ? HIGH : LOW);
 }

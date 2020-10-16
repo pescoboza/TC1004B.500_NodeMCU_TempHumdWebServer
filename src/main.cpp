@@ -13,8 +13,8 @@
 
 // Led pins
 #define GREEN_LED 14
-#define RED_LED 12
-#define YELLOW_LED 13 
+#define RED_LED 13
+#define YELLOW_LED 12 
 
 namespace led{
     bool green{false};
@@ -57,12 +57,14 @@ namespace view{
         digitalWrite(BUILTIN_LED, LOW);
         led::green = true;
         server.send(200, "text/plain", "OK");
+        Serial.println("200 - /green-on");
         digitalWrite(BUILTIN_LED, HIGH);
     }
     void greenOff(){
         digitalWrite(BUILTIN_LED, LOW);
         led::green = false;
         server.send(200, "text/plain", "OK");
+        Serial.println("200 - /green-off");
         digitalWrite(BUILTIN_LED, HIGH);
     }
     
@@ -70,6 +72,7 @@ namespace view{
         digitalWrite(BUILTIN_LED, LOW);
         led::red = true;
         server.send(200, "text/plain", "OK");
+        Serial.println("200 - /red-on");
         digitalWrite(BUILTIN_LED, HIGH);
     }
     
@@ -77,17 +80,24 @@ namespace view{
         digitalWrite(BUILTIN_LED, LOW);
         led::red = false;
         server.send(200, "text/plain", "OK");
+        Serial.println("200 - /red-off");
         digitalWrite(BUILTIN_LED, HIGH);
     }
     
     void yellowOn(){
+        digitalWrite(BUILTIN_LED, LOW);
         led::yellow = true;
         server.send(200, "text/plain", "OK");
+        Serial.println("200 - /yellow-on");
+        digitalWrite(BUILTIN_LED, HIGH);
     }
     
     void yellowOff(){
+        digitalWrite(BUILTIN_LED, LOW);
         led::yellow = false;
         server.send(200, "text/plain", "OK");
+        Serial.println("200 - /yellow-off");
+        digitalWrite(BUILTIN_LED, HIGH);
     }
 };
 
